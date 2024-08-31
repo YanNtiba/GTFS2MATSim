@@ -44,29 +44,31 @@ import org.matsim.vehicles.VehicleWriterV1;
 
 public final class RunGTFS2MATSimExample {
 
-	private RunGTFS2MATSimExample() {
-	}
+	private RunGTFS2MATSimExample() {}
 
 	public static void main(String[] args) {
-	
-		//this was tested for the latest VBB GTFS, available at 
-		// http://www.vbb.de/de/article/fahrplan/webservices/datensaetze/1186967.html
-		
-		//input data
-		String gtfsZipFile = "";
-		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:25833");
-		LocalDate date = LocalDate.parse("2020-06-25");
+		// Specify the path to your GTFS ZIP file
+		String gtfsZipFile = "C:\\Users\\yanni\\OneDrive - Simon Fraser University (1sfu)\\Simon Fraser University (1sfu)\\Yan\\ABM\\vancouver_transit.zip";
 
-		//output files 
-		String scheduleFile = "transitSchedule.xml.gz";
-		String networkFile = "network.xml.gz";
-		String transitVehiclesFile ="transitVehicles.xml.gz";
+		// Define the coordinate transformation
+		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:25833");
+
+		// Set the date for which you want to convert the schedule
+		LocalDate date = LocalDate.parse("2024-08-30");
+
+		// Output files in the same directory as the GTFS ZIP file
+		String outputDir = "C:\\Users\\yanni\\OneDrive - Simon Fraser University (1sfu)\\Simon Fraser University (1sfu)\\Yan\\ABM\\";
+		String scheduleFile = outputDir + "transitSchedule.xml.gz";
+		String networkFile = outputDir + "network.xml.gz";
+		String transitVehiclesFile = outputDir + "transitVehicles.xml.gz";
+
+		// Create a MATSim scenario
 		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 
-		//Convert GTFS
-		RunGTFS2MATSim.convertGTFSandAddToScenario(scenario,gtfsZipFile,date,ct,true,true);
+		// Convert GTFS data to MATSim format
+		RunGTFS2MATSim.convertGTFSandAddToScenario(scenario, gtfsZipFile, date, ct, true, true);
 
-		//Write out network, vehicles and schedule
+		// Write the network, vehicles, and schedule to files
 		new NetworkWriter(scenario.getNetwork()).write(networkFile);
 		new TransitScheduleWriter(scenario.getTransitSchedule()).writeFile(scheduleFile);
 		new MatsimVehicleWriter(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
